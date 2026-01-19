@@ -139,6 +139,24 @@ adk web
 
 ## 🛡️ Guardrail Behavior Example
 
+Guardrail flow
+```
+User Input
+   ↓
+Regex PII Detection
+   ↓
+NER API Call (PERSON, ADDRESS)
+   ↓
+Merge Entities
+   ↓
+Mask Sensitive Spans
+   ↓
+Sanitized Prompt
+   ↓
+LLM
+
+```
+
 ### User Input
 ```
 Halo, saya Putra Syafiq dengan nomor 082112239199 dan email user@gmail.com
@@ -177,10 +195,108 @@ Metrics are collected using `psutil` and Python timing utilities, and can be log
 
 ## 🚀 Use Cases
 
-- AI Customer Service Systems
-- Privacy-aware LLM Applications
-- PII Guardrail for Chatbots
-- Enterprise AI Compliance Scenarios
+---
+
+User input:
+```
+Haloo, nama saya Putra Syafiq, saya ingin menanyakan untuk CW Coffee buka sampai jam berapa ya?
+```
+Guardrail Result:
+```
+Haloo, nama saya [REDACTED_PERSON], saya ingin menanyakan untuk CW Coffee buka sampai jam berapa ya?
+```
+CS Agent Output:
+```
+Halo, kak! CW Coffee & Eatery buka 24 jam non-stop setiap hari ya. Kami siap melayani kakak kapan saja!
+```
+
+---
+
+User input:
+```
+Baik, untuk lokasi cafe nya dimana?
+```
+Guardrail Result:
+```
+Baik, untuk lokasi cafe nya dimana?
+```
+CS Agent Output:
+```
+Lokasi CW Coffee & Eatery ada di Jalan Jakarta, Kota Malang ya, Kak. Ditunggu kedatangannya!
+```
+
+---
+
+User input:
+```
+Untuk range harga menunya berapa?
+```
+Guardrail Result:
+```
+Untuk range harga menunya berapa?
+```
+CS Agent Output:
+```
+Untuk range harga menu kami mulai dari Rp15.000 sampai Rp60.000, Kak. Ada berbagai pilihan kopi, non-kopi, makanan berat, dan camilan juga!
+```
+
+---
+
+User input:
+```
+Apakah bisa pesan dan dikirim ke alamat Jalan Taman Windsor?
+```
+Guardrail Result:
+```
+Apakah bisa pesan dan dikirim ke alamat [REDACTED_ADDRESS]?
+```
+CS Agent Output:
+```
+Tentu saja bisa, Kak! Kami tersedia di GrabFood, GoFood, dan ShopeeFood. Kakak bisa langsung pesan via aplikasi tersebut dan akan diantar ke alamat yang dituju.
+```
+
+---
+
+User input:
+```
+Saya tertarik franchising. Kalau bisa kirim infonya ke email cakrawalasyafiq3@gmail.com
+```
+Guardrail Result:
+```
+Saya tertarik franchising. Kalau bisa kirim infonya ke email [REDACTED_EMAIL]
+```
+CS Agent Output:
+```
+Halo Kak! Mohon maaf, untuk saat ini kami belum bisa memberikan informasi terkait franchise ya, karena layanan kami fokus pada pertanyaan seputar menu, lokasi, fasilitas, dan operasional cafe.
+
+Demi keamanan, mohon untuk tidak membagikan data pribadi sensitif (seperti alamat email, nomor HP, alamat, KTP, dll) di percakapan ini ya, Kak.
+```
+
+---
+
+## 📊 Performance Evaluation
+
+The following table summarizes the performance of the AI Agent and NER-based guardrail system based on several test requests.
+
+| No | User Input (Summary) | PII Detected | NER Latency (ms) | CPU Usage (%) | Memory Usage (MB) |
+|----|----------------------|--------------|------------------|---------------|-------------------|
+| 1 | Name inquiry with personal name | PERSON | 167.98 | 0.0 | 134.92 |
+| 2 | Cafe location inquiry | No | 23.89 | 0.0 | 140.17 |
+| 3 | Menu price range inquiry | No | 24.42 | 0.0 | 140.49 |
+| 4 | Delivery address inquiry | ADDRESS | 31.72 | 0.0 | 140.50 |
+| 5 | Franchise info with email | EMAIL | 35.21 | 0.0 | 140.58 |
+
+---
+
+### 📈 Performance Summary
+
+- **Average NER Latency**: ~56 ms  
+- **Minimum NER Latency**: 23.89 ms  
+- **Maximum NER Latency**: 167.98 ms (initial request / cold start)
+- **CPU Usage**: Negligible (CPU-only deployment)
+- **Memory Usage**: Stable around 140 MB
+
+The results indicate that the system operates efficiently with low latency and stable resource consumption, making it suitable for real-time AI customer service applications.
 
 ---
 
