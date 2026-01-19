@@ -9,9 +9,8 @@ from google.adk.agents.callback_context import CallbackContext
 from google.adk.models import LlmRequest, LlmResponse, Gemini
 from google.genai import types
 
-# =============================
+
 # LOAD ENV
-# =============================
 load_dotenv()
 
 def before_model_callback(
@@ -24,7 +23,6 @@ def before_model_callback(
     last_user_index = None
     last_user_message = ""
 
-    # Cari index user message terakhir
     for i in range(len(llm_request.contents) - 1, -1, -1):
         content = llm_request.contents[i]
         if content.role == "user" and content.parts:
@@ -53,7 +51,6 @@ def before_model_callback(
         print("ENTITIES:", result["entities"])
         print("MASKED  :", result["safe_text"])
 
-        # 🔥 INI YANG BENAR
         llm_request.contents[last_user_index].parts[0].text = result["safe_text"]
     else:
         print("=== USER PROMPT SAFE ===")
@@ -66,17 +63,15 @@ def before_model_callback(
 
     return None
 
-# =============================
+
 # MODEL CONFIG
-# =============================
 model = Gemini(
     model="gemini-2.5-flash",
     api_key=os.getenv("GOOGLE_API_KEY")
 )
 
-# =============================
+
 # AGENT DEFINITION
-# =============================
 root_agent = LlmAgent(
     name="customer_service_agent",
     model=model,

@@ -16,9 +16,8 @@ REGEX_PATTERNS = {
     "CREDIT_CARD": r"\b\d{4}[- ]?\d{4}[- ]?\d{4}[- ]?\d{4}\b"
 }
 
-# =============================
+
 # REGEX ENTITY EXTRACTION
-# =============================
 def extract_regex_entities(text: str):
     entities = []
 
@@ -33,9 +32,7 @@ def extract_regex_entities(text: str):
     return entities
 
 
-# =============================
 # NER ENTITY EXTRACTION
-# =============================
 def extract_ner_entities(text: str):
     start = time.perf_counter()
 
@@ -51,9 +48,7 @@ def extract_ner_entities(text: str):
     return response.json().get("entities", []), latency_ms
 
 
-# =============================
 # MASKING FUNCTION
-# =============================
 def mask_text(text: str, entities: list):
     """
     Mask text using entity offsets
@@ -61,7 +56,6 @@ def mask_text(text: str, entities: list):
     """
     masked_text = text
 
-    # IMPORTANT: reverse sort to keep offsets valid
     for ent in sorted(entities, key=lambda x: x["start"], reverse=True):
         label = ent["label"]
         masked_text = (
@@ -73,9 +67,7 @@ def mask_text(text: str, entities: list):
     return masked_text
 
 
-# =============================
 # MAIN GUARDRAIL PIPELINE
-# =============================
 def apply_guardrail(text: str):
     """
     Returns:
@@ -87,13 +79,13 @@ def apply_guardrail(text: str):
     }
     """
 
-    # 1️⃣ REGEX ENTITIES
+    # REGEX ENTITIES
     regex_entities = extract_regex_entities(text)
 
-    # 2️⃣ NER ENTITIES
+    # NER ENTITIES
     ner_entities, ner_latency = extract_ner_entities(text)
 
-    # 3️⃣ MERGE ENTITIES
+    # MERGE ENTITIES
     all_entities = regex_entities + ner_entities
     
     print(f"NER latency: {ner_latency:.2f} ms")
@@ -109,7 +101,7 @@ def apply_guardrail(text: str):
             "reason": f"PII detected: {', '.join(labels)}"
         }
 
-    # 4️⃣ SAFE
+    # SAFE
     return {
         "allowed": True,
         "safe_text": text,
